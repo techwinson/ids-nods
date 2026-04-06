@@ -1,0 +1,32 @@
+{
+  "dataset": "UNSW_NB15_training-set.csv",
+  "trained_at": "2026-04-05T22:08:11.931757Z",
+  "sample_count": 82332,
+  "feature_count": 190,
+  "random_forest": {
+    "accuracy": 0.9766806339952633,
+    "precision": 0.9842721695482431,
+    "recall": 0.9731995147237233,
+    "f1_score": 0.9787045252883763,
+    "auc_roc": 0.9972884815442994,
+    "confusion_matrix": {
+      "tp": 8824,
+      "tn": 7259,
+      "fp": 141,
+      "fn": 243
+    }
+  },
+  "xgboost": {
+    "accuracy": 0.978077366854922,
+    "precision": 0.9860428762840554,
+    "recall": 0.9739715451637807,
+    "f1_score": 0.9799700382844143,
+    "auc_roc": 0.9978458860316145,
+    "confusion_matrix": {
+      "tp": 8831,
+      "tn": 7275,
+      "fp": 125,
+      "fn": 236
+    }
+  }
+}
