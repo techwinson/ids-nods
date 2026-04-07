@@ -6,6 +6,7 @@ import "./App.css";
 
 const TOKEN_KEY = "ids-token";
 const USER_KEY = "ids-user";
+const THEME_KEY = "ids-theme";
 const API_BASE = process.env.REACT_APP_API_URL || "http://localhost:5000";
 
 const getStoredAuth = () => {
@@ -27,11 +28,34 @@ const getStoredAuth = () => {
   return { token, user };
 };
 
+const getStoredTheme = () => {
+  const storedTheme = localStorage.getItem(THEME_KEY);
+  if (storedTheme === "light" || storedTheme === "dark") {
+    return storedTheme;
+  }
+
+  if (
+    typeof window !== "undefined" &&
+    typeof window.matchMedia === "function" &&
+    window.matchMedia("(prefers-color-scheme: dark)").matches
+  ) {
+    return "dark";
+  }
+
+  return "light";
+};
+
 function App() {
   const [auth, setAuth] = useState(getStoredAuth);
+  const [theme, setTheme] = useState(getStoredTheme);
   const [loadingProfile, setLoadingProfile] = useState(
     Boolean(auth.token && !auth.user),
   );
+
+  useEffect(() => {
+    document.documentElement.setAttribute("data-theme", theme);
+    localStorage.setItem(THEME_KEY, theme);
+  }, [theme]);
 
   useEffect(() => {
     if (auth.token) {
@@ -94,25 +118,51 @@ function App() {
     setAuth({ token: null, user: null });
   };
 
-  if (!auth.token) {
-    return <Login onAuthSuccess={handleAuthSuccess} />;
-  }
+  const renderApp = () => {
+    if (!auth.token) {
+      return <Login onAuthSuccess={handleAuthSuccess} />;
+    }
 
-  if (loadingProfile || !auth.user) {
+    if (loadingProfile || !auth.user) {
+      return (
+        <div className="page-shell">
+          <div className="loading-card">Loading profile...</div>
+        </div>
+      );
+    }
+
     return (
-      <div className="page-shell">
-        <div className="loading-card">Loading profile...</div>
-      </div>
+      <Dashboard
+        token={auth.token}
+        user={auth.user}
+        onLogout={handleLogout}
+        onUserUpdate={(user) => setAuth((prev) => ({ ...prev, user }))}
+      />
     );
-  }
+  };
+
+  const isDark = theme === "dark";
 
   return (
-    <Dashboard
-      token={auth.token}
-      user={auth.user}
-      onLogout={handleLogout}
-      onUserUpdate={(user) => setAuth((prev) => ({ ...prev, user }))}
-    />
+    <>
+      <button
+        type="button"
+        className="theme-toggle"
+        aria-label={`Switch to ${isDark ? "light" : "dark"} mode`}
+        aria-pressed={isDark}
+        title={`Switch to ${isDark ? "light" : "dark"} mode`}
+        onClick={() => setTheme((prev) => (prev === "dark" ? "light" : "dark"))}
+      >
+        <span className="theme-toggle-track" aria-hidden="true">
+          <span className="theme-toggle-thumb" />
+        </span>
+        <span className="theme-toggle-text">
+          {isDark ? "Dark" : "Light"} mode
+        </span>
+      </button>
+
+      {renderApp()}
+    </>
   );
 }
 

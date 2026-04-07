@@ -480,7 +480,7 @@ function ModelPerformanceView({ token, onLogout }) {
         <>
           <div className="info-text">
             Last trained: {formatTime(metrics.trained_at)} | Samples:{" "}
-            {metrics.sample_count} | Features: {metrics.feature_count}
+            {metrics.sample_count}
           </div>
           {renderModelBlock("Random Forest", metrics.random_forest)}
           {renderModelBlock("XGBoost", metrics.xgboost)}
